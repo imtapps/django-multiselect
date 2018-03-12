@@ -13,12 +13,8 @@ DATABASES = {
 
 TIME_ZONE = 'America/Chicago'
 STATIC_URL = '/static/'
-TEMPLATE_DIRS = (
-    os.path.join(PROJECT_DIR, 'templates'),
-)
-STATIC_DIR = (
-    os.path.join(PROJECT_DIR, 'static'),
-)
+TEMPLATE_DIRS = (os.path.join(PROJECT_DIR, 'templates'), )
+STATIC_DIR = (os.path.join(PROJECT_DIR, 'static'), )
 ADMIN_MEDIA_PREFIX = '/media/'
 SECRET_KEY = '-2cmgs7l$5grqwd!cyat6&6241^ah&rwn#ef5s_lm(1@0a4w&v'
 

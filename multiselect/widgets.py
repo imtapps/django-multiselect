@@ -18,9 +18,7 @@ class MultiSelectWidget(forms.SelectMultiple):
                 settings.STATIC_URL + 'multiselect/css/themes/smoothness/jquery-ui-1.7.1.custom.css',
             )
         }
-        js = (
-            settings.STATIC_URL + 'multiselect/js/ui.multiselect.js',
-        )
+        js = (settings.STATIC_URL + 'multiselect/js/ui.multiselect.js', )
 
     def add_css_class(self, attrs):
         attrs = attrs or {}
@@ -46,6 +44,10 @@ class FilteredSelectMultiple(forms.SelectMultiple):
         if option_value is None:
             option_value = ''
         option_value = force_text(option_value)
+        selected_html = self.get_selected_html(option_value, selected_choices)
+        return format_html('<option value="{}"{}>{}</option>', option_value, selected_html, force_text(option_label))
+
+    def get_selected_html(self, option_value, selected_choices):
         if option_value in selected_choices:
             selected_html = mark_safe(' selected="selected"')
             if not self.allow_multiple_selected:
@@ -53,20 +55,15 @@ class FilteredSelectMultiple(forms.SelectMultiple):
                 selected_choices.remove(option_value)
         else:
             selected_html = ''
-        return format_html('<option value="{}"{}>{}</option>',
-                           option_value,
-                           selected_html,
-                           force_text(option_label))
+        return selected_html
 
-    def render_options(self, choices, selected_choices):
+    def render_options(self, choices, selected_choices):  # noqa: C901
         # Normalize to strings.
         selected_choices = set(force_text(v) for v in selected_choices)
         output = []
         for option_value, option_label in chain(self.choices, choices):
             if isinstance(option_label, (list, tuple)):
                 output.append(format_html('<optgroup label="{}">', force_text(option_value)))
-                for option in option_label:
-                    output.append(self.render_option(selected_choices, *option))
                 output.append('</optgroup>')
             else:
                 output.append(self.render_option(selected_choices, option_value, option_label))

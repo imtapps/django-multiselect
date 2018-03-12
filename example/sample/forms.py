@@ -1,4 +1,3 @@
-
 from django import forms
 from multiselect.fields import MultipleChoiceField
 from example.sample import models
