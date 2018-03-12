@@ -1,11 +1,11 @@
-from django.conf.urls import *
-from django.conf import settings
+from django.conf.urls import *  # noqa: F403
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^$', 'example.sample.views.index', name='index'),
     url(r'^2$', 'example.sample.views.index2', name='index2'),
     # Example:
@@ -15,5 +15,5 @@ urlpatterns = patterns('',
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-     (r'^admin/', include(admin.site.urls)),
+    (r'^admin/', include(admin.site.urls)),
 )
