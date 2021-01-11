@@ -80,7 +80,7 @@ class FilteredSelectMultiple(forms.SelectMultiple):
         output.append('</select>')
         return mark_safe('\n'.join(output))
 
-    def render(self, name, value, attrs=None, choices=()):
+    def render(self, name, value, attrs=None, choices=(), renderer=None):
         attrs = attrs or {}
         attrs['class'] = 'selectfilter'
         if self.is_stacked:
