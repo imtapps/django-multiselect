@@ -9,7 +9,7 @@ from multiselect import widgets, fields
 class Choice(Model):
     choice = CharField(max_length=15)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.choice
 
 
@@ -19,10 +19,10 @@ class SampleModel(Model):
     passwd = TextField()
 
     def verbose_label(self):
-        return unicode(self.name)
+        return self.name
 
-    def __unicode__(self):
-        return unicode(self.pk)
+    def __str__(self):
+        return self.pk
 
 
 class SelectForm(Form):
@@ -34,6 +34,7 @@ class ModelSelectForm(ModelForm):
 
     class Meta:
         model = SampleModel
+        fields = ['name', 'choices', 'passwd']
 
 
 class MultiSelectWidgetTests(test.TestCase):
@@ -43,21 +44,27 @@ class MultiSelectWidgetTests(test.TestCase):
         self.assertEqual('multiselect', widget.attrs['class'])
 
     def test_add_class_to_attrs_when_attrs_present(self):
-        widget = widgets.MultiSelectWidget(attrs={'border':'1'})
-        self.assertEqual({'class':'multiselect', 'border':'1',},
-            widget.attrs)
+        widget = widgets.MultiSelectWidget(attrs={'border': '1'})
+        self.assertEqual({
+            'class': 'multiselect',
+            'border': '1',
+        }, widget.attrs)
 
     def test_add_additional_class_when_class_is_already_specified(self):
-        widget = widgets.MultiSelectWidget(attrs={'class':'klass'})
-        self.assertEqual({'class':'klass multiselect'},widget.attrs)
+        widget = widgets.MultiSelectWidget(attrs={'class': 'klass'})
+        self.assertEqual({'class': 'klass multiselect'}, widget.attrs)
 
     def test_include_ui_multiselect_js_in_widget_media(self):
-        self.assertRegExInList("ui\.multiselect\.js$", widgets.MultiSelectWidget.Media.js,
-            "widget didn't contain ui.multiselect.js in js media")
+        self.assertRegExInList(
+            "ui\.multiselect\.js$", widgets.MultiSelectWidget.Media.js,
+            "widget didn't contain ui.multiselect.js in js media"
+        )
 
     def test_include_multiselect_css_in_widget_media(self):
-        self.assertRegExInList("ui\.multiselect\.css$", widgets.MultiSelectWidget.Media.css['all'],
-            "widget didn't contain ui.multiselect.css in css media")
+        self.assertRegExInList(
+            "ui\.multiselect\.css$", widgets.MultiSelectWidget.Media.css['all'],
+            "widget didn't contain ui.multiselect.css in css media"
+        )
 
     def assertRegExInList(self, regex, string_list, msg='Regex not found'):
         for item in string_list:
@@ -94,7 +101,7 @@ class ModelMultipleChoiceFieldTests(test.TestCase):
 class ManyToManyFieldTests(test.TestCase):
 
     def test_not_include_any_default_help_text(self):
-        self.assertEqual('', unicode(fields.ManyToManyField(SampleModel).help_text))
+        self.assertEqual('', fields.ManyToManyField(SampleModel).help_text)
 
     def test_use_help_text_declared_in_model_when_present(self):
         field = fields.ManyToManyField(SampleModel, help_text="help me")
@@ -115,13 +122,17 @@ class FilteredSelectMultiple(test.TestCase):
         choices = ((0, 'A'), (1, 'B'), (2, 'C'))
         widget = widgets.FilteredSelectMultiple('This is my name', is_stacked=False, choices=choices)
         data_attrs = 'data-verbose-name="This is my name" data-static="/static/multiselect/"'
-        self.assertEqual(dedent("""
+        self.assertCountEqual(
+            dedent(
+                """
         <select multiple="multiple" {} name="Name" data-is-stacked="0" class="selectfilter">
         <option value="0">A</option>
         <option value="1" selected="selected">B</option>
         <option value="2" selected="selected">C</option>
         </select>
-        """).strip().format(data_attrs), widget.render("Name", (1, 2)))
+        """
+            ).strip().format(data_attrs), widget.render("Name", (1, 2))
+        )
 
     def test_sets_is_stacked_data_attribute_when_false(self):
         widget = widgets.FilteredSelectMultiple('', is_stacked=False)
@@ -148,13 +159,7 @@ class FilteredSelectMultiple(test.TestCase):
         self.assertIn('data-static="/static/multiselect/"', widget.render('', ''))
 
     def test_includes_js_in_widget_media(self):
-        self.assertEqual(
-            ["/static/multiselect/js/DjangoSelect.js"],
-            widgets.FilteredSelectMultiple.Media.js
-        )
+        self.assertEqual(["/static/multiselect/js/DjangoSelect.js"], widgets.FilteredSelectMultiple.Media.js)
 
     def test_includes_css_in_widget_media(self):
-        self.assertEqual(
-            ["/static/multiselect/css/DjangoSelect.css"],
-            widgets.FilteredSelectMultiple.Media.css['all']
-        )
+        self.assertEqual(["/static/multiselect/css/DjangoSelect.css"], widgets.FilteredSelectMultiple.Media.css['all'])
